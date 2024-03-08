@@ -17,11 +17,11 @@ public class FareCalculatorService {
 
         switch (ticket.getParkingSpot().getParkingType()) {
             case CAR: {
-                ticket.setPrice(duration * Fare.CAR_RATE_PER_HOUR);
+                ticket.setPrice(calculatePriceOfTicket(duration, Fare.CAR_RATE_PER_HOUR));
                 break;
             }
             case BIKE: {
-                ticket.setPrice(duration * Fare.BIKE_RATE_PER_HOUR);
+                ticket.setPrice(calculatePriceOfTicket(duration, Fare.BIKE_RATE_PER_HOUR));
                 break;
             }
             default:
@@ -30,7 +30,7 @@ public class FareCalculatorService {
     }
 
     private int getInTimeInMinutes(Ticket ticket) {
-        return (int) ticket.getInTime().getTime() / (60 * 1000);
+        return (int) ticket.getInTime().getTime() / (60 * 1000); // convert miliseconds to minutes
     }
 
     private int getOutTimeInMinutes(Ticket ticket) {
@@ -44,5 +44,11 @@ public class FareCalculatorService {
 
     private double convertMinutesToHours(int duration) {
         return duration / 60.0;
+    }
+
+    private double calculatePriceOfTicket(double duration, double ratePerHour) {
+        // 0.5 hours is free
+        double price = duration <= 0.5 ? 0.0 : duration * ratePerHour;
+        return price;
     }
 }
