@@ -5,7 +5,7 @@ import com.parkit.parkingsystem.model.Ticket;
 
 public class FareCalculatorService {
 
-    public void calculateFare(Ticket ticket) {
+    public void calculateFare(Ticket ticket, boolean discount) {
         if ((ticket.getOutTime() == null) || (ticket.getOutTime().before(ticket.getInTime()))) {
             throw new IllegalArgumentException("Out time provided is incorrect:" + ticket.getOutTime().toString());
         }
@@ -17,16 +17,20 @@ public class FareCalculatorService {
 
         switch (ticket.getParkingSpot().getParkingType()) {
             case CAR: {
-                ticket.setPrice(calculatePriceOfTicket(duration, Fare.CAR_RATE_PER_HOUR));
+                ticket.setPrice(calculatePriceOfTicket(duration, Fare.CAR_RATE_PER_HOUR, discount));
                 break;
             }
             case BIKE: {
-                ticket.setPrice(calculatePriceOfTicket(duration, Fare.BIKE_RATE_PER_HOUR));
+                ticket.setPrice(calculatePriceOfTicket(duration, Fare.BIKE_RATE_PER_HOUR, discount));
                 break;
             }
             default:
                 throw new IllegalArgumentException("Unkown Parking Type");
         }
+    }
+
+    public void calculateFare(Ticket ticket) {
+        calculateFare(ticket, false);
     }
 
     private int getInTimeInMinutes(Ticket ticket) {
@@ -46,9 +50,21 @@ public class FareCalculatorService {
         return duration / 60.0;
     }
 
-    private double calculatePriceOfTicket(double duration, double ratePerHour) {
+    private double calculatePriceOfTicket(double durationInHour, double ratePerHour, boolean discount) {
         // 0.5 hours is free
-        double price = duration <= 0.5 ? 0.0 : duration * ratePerHour;
+        double price = durationInHour <= 0.5 ? 0.0 : durationInHour * ratePerHour;
+
+        if (discount) {
+            price = applyDiscountInPercent(price, 5.0); // 5% discount
+        }
         return price;
+    }
+
+    private double applyDiscountInPercent(double price, double amountOfDiscount) {
+        if (price <= 0.0) {
+            return 0.0;
+        } else {
+            return price - (price * (amountOfDiscount / 100.0));
+        }
     }
 }
