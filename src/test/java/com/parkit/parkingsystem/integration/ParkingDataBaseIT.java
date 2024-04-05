@@ -118,7 +118,7 @@ public class ParkingDataBaseIT {
 
         // deuxieme passage sur le parking en simulant un utilisateur récurrent avec
         // une durée de 1h
-        Date inTime = new Date(System.currentTimeMillis() - (10 * 60 * 60 * 1000)); // 1h
+        Date inTime = new Date(System.currentTimeMillis() - (60 * 60 * 1000));
         Ticket ticket = new Ticket();
         ticket.setParkingSpot(new ParkingSpot(1, ParkingType.CAR, false));
         ticket.setVehicleRegNumber("ABCDEF");
